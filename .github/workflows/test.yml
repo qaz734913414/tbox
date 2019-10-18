@@ -1,0 +1,32 @@
+name: build
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v1
+    - uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: v2.2.8
+    - name: build
+      env:
+        CI: true
+      run: |
+        xmake 
+        xmake run demo
+        xmake f -m debug
+        xmake -r
+        xmake run demo
+        xmake f --micro=y
+        xmake -r
+        xmake run demo
+        xmake f --small=y -m debug
+        xmake -r
+        xmake run demo
